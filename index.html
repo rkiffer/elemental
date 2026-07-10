@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#07110d" />
+  <title>Elemental</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="passwordScreen" class="password-screen">
+    <div class="password-box">
+      <img src="./assets/logo.png" alt="Elemental" class="password-logo" draggable="false" />
+      <h1>Elemental</h1>
+      <h2>Acesso Restrito</h2>
+      <p>Digite a senha para acessar os mapas.</p>
+      <input id="passwordInput" type="password" placeholder="Digite a senha" autocomplete="current-password" aria-label="Senha de acesso" />
+      <button id="passwordButton" type="button">Entrar</button>
+      <p id="passwordError" class="password-error" aria-live="polite">Senha incorreta.</p>
+    </div>
+  </div>
+
+  <div id="mainApp" class="app-shell" style="display:none;">
+    <aside class="left-sidebar">
+      <div class="brand">
+        <img src="./assets/logo.png" class="logo" alt="Elemental" draggable="false" />
+        <span class="brand-wordmark">Elemental</span>
+      </div>
+
+      <section class="panel-block">
+        <div class="block-head">
+          <h3>Personagens</h3>
+          <button id="addCharacterBtn" class="primary small" type="button">+ Adicionar</button>
+        </div>
+        <div class="search-wrap">
+          <span>⌕</span>
+          <input id="characterSearch" type="search" placeholder="Filtrar personagens..." autocomplete="off" />
+        </div>
+        <button id="globalSearchBtn" class="global-search-btn" type="button">⌕ Localizar char ou dono</button>
+        <div id="charactersList" class="characters-list"></div>
+      </section>
+
+      <section class="stats-card">
+        <div><span>Spots nesta área</span><strong id="spotsCount">0 / 500</strong></div>
+        <div><span>Personagens</span><strong id="charsCount">0</strong></div>
+        <div><span>Última atualização</span><strong id="lastUpdate">--</strong></div>
+      </section>
+
+      <section class="tip-card">
+        <div class="mouse-icon">│</div>
+        <div><b>Dica:</b><br />Clique no mapa para adicionar um novo spot.</div>
+      </section>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="selectors">
+          <label class="select-group">Mapa:<select id="mapSelect" aria-label="Selecionar mapa"></select></label>
+          <label class="select-group">Servidor:<select id="serverSelect" aria-label="Selecionar servidor"></select></label>
+        </div>
+        <div class="top-actions">
+          <button id="clearMapBtn" class="ghost danger" type="button">♜ Limpar Spots</button>
+          <button id="exportBtn" class="ghost" type="button">🔗 Exportar Link</button>
+          <button id="shareBtn" class="primary" type="button">⌘ Compartilhar</button>
+        </div>
+      </header>
+
+      <section class="map-card">
+        <div class="map-title"><span>✥</span><b id="currentMapName">Alkamar</b><em id="currentServerName">Servidor 1</em></div>
+        <div id="mapStage" class="map-stage">
+          <div id="mapInner" class="map-inner">
+            <img id="mapImage" alt="Mapa selecionado" draggable="false" />
+            <div id="spotsLayer" class="spots-layer"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right-sidebar">
+      <section class="help-card">
+        <h3>Como usar</h3>
+        <ol>
+          <li>Selecione o mapa e o servidor</li>
+          <li>Clique no mapa para adicionar um spot</li>
+          <li>Escolha o personagem</li>
+          <li>O spot será salvo automaticamente</li>
+          <li>Compartilhe o link com seu time</li>
+        </ol>
+      </section>
+
+      <section class="help-card">
+        <h3>Opções de Visualização</h3>
+        <div class="setting-line"><span>Mostrar Nomes</span><label class="switch"><input id="showNamesToggle" type="checkbox" checked /><i></i></label></div>
+        <label class="select-label" for="spotColorMode">Cores dos Spots</label>
+        <select id="spotColorMode"><option>Por Personagem</option></select>
+      </section>
+
+      <section id="spotInspector" class="help-card">
+        <h3>Spot Selecionado</h3>
+        <p class="muted">Clique em um spot para editar ou excluir.</p>
+      </section>
+
+      <section class="help-card">
+        <h3>Ações do Mapa</h3>
+        <button id="clearMapBtn2" class="wide danger-outline" type="button">♜ Limpar Spots desta Área</button>
+        <button id="centerMapBtn" class="wide green-outline" type="button">⌾ Centralizar Mapa</button>
+      </section>
+    </aside>
+  </div>
+
+  <dialog id="spotDialog" class="modal">
+    <form method="dialog">
+      <h2 id="modalTitle">Adicionar Spot</h2>
+      <label for="spotCharacterSelect">Personagem</label>
+      <select id="spotCharacterSelect"></select>
+      <div class="modal-actions"><button class="ghost" value="cancel">Cancelar</button><button id="saveSpotBtn" class="primary" value="default">Salvar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="characterDialog" class="modal">
+    <form method="dialog">
+      <h2 id="charModalTitle">Adicionar Personagem</h2>
+      <label for="charNameInput">Nome</label>
+      <input id="charNameInput" type="text" placeholder="Nome do char" autocomplete="off" />
+      <label for="charColorInput">Cor</label>
+      <input id="charColorInput" type="color" value="#31d978" />
+      <div class="modal-actions"><button class="ghost" value="cancel">Cancelar</button><button id="saveCharacterBtn" class="primary" value="default">Salvar</button></div>
+    </form>
+  </dialog>
+
+
+  <dialog id="globalSearchDialog" class="modal search-modal">
+    <form method="dialog">
+      <div class="search-modal-head">
+        <div><h2>Localizar Personagens</h2><p>Pesquisa em todos os mapas e servidores.</p></div>
+        <button class="modal-close" value="cancel" aria-label="Fechar">×</button>
+      </div>
+      <div class="global-search-wrap"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Ex.: RNK ou xNguKillfer" autocomplete="off" /></div>
+      <div id="globalSearchResults" class="global-search-results"></div>
+    </form>
+  </dialog>
+
+  <div id="toast"></div>
+  <script src="./password.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
